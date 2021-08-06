@@ -25,7 +25,7 @@ from supplychain.models import MangoFarm,Customer;
 class CustomerSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Customer
-        fields = ['customer_name','mango_requirement','x_coord','y_coord','city']
+        fields = ['customer_name','mango_requirement','x_coord','y_coord']
   
 # ViewSets define the view behavior.
 class CustomerViewSet(viewsets.ReadOnlyModelViewSet):
@@ -33,9 +33,17 @@ class CustomerViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CustomerSerializer
 
 class BlackListedViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Customer.objects.filter(blacklisted=True)
+    
     serializer_class = CustomerSerializer
-
+    queryset = Customer.objects.all();
+    def get_queryset(self):
+        """
+        Optionally restricts the returned purchases to a given user,
+        by filtering against a `username` query parameter in the URL.
+        """
+        queryset = self.queryset
+        queryset = queryset.filter(blacklisted=True)
+        return queryset
 
 class FarmSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -49,7 +57,7 @@ class FarmViewSet(viewsets.ReadOnlyModelViewSet):
     
 router = routers.DefaultRouter()
 router.register(r'farms', FarmViewSet)
-router.register(r'blacklisted-customers', BlackListedViewSet,basename="blacklisted-customers")
+router.register(r'blacklisted-customers', BlackListedViewSet,basename="blacklisted")
 router.register(r'customers', CustomerViewSet)
 
 urlpatterns = [
