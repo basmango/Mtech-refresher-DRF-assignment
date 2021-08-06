@@ -19,23 +19,23 @@ from django.urls import path,include
 from django.contrib.auth.models import User
 from rest_framework import routers, serializers, viewsets
 from rest_framework.permissions import BasePermission,IsAuthenticated,SAFE_METHODS
-from supplychain.models import MangoFarm;
-from supplychain.models  import Customer;
-class ReadOnly(BasePermission):
-    def has_permission(self, request, view):
-        
-        return request.method in SAFE_METHODS
+from supplychain.models import MangoFarm,Customer;
+
 
 class CustomerSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Customer
         fields = ['customer_name','mango_requirement','x_coord','y_coord','city']
-        
+  
 # ViewSets define the view behavior.
 class CustomerViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
-  
+
+class BlackListedViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Customer.objects.filter(blacklisted=True)
+    serializer_class = CustomerSerializer
+
 
 class FarmSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -49,6 +49,7 @@ class FarmViewSet(viewsets.ReadOnlyModelViewSet):
     
 router = routers.DefaultRouter()
 router.register(r'farms', FarmViewSet)
+router.register(r'blacklisted-customers', BlackListedViewSet,basename="blacklisted-customers")
 router.register(r'customers', CustomerViewSet)
 
 urlpatterns = [

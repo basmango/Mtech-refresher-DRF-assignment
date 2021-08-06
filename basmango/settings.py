@@ -111,7 +111,7 @@ DATABASES['default'].update(dj_database_url.config(conn_max_age=500, ssl_require
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Allow all host headers
-ALLOWED_HOSTS = ['www.basmango.com','basmango.com']
+ALLOWED_HOSTS =  ['*'] if (DEBUG)  else ['www.basmango.com','basmango.com']
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
